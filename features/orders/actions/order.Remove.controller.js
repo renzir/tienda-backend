@@ -1,6 +1,6 @@
 const orderRemoveService = require("./order.Remove.Service");
 
-async function orederRemoveController(req, res, next) {
+async function orderRemoveController(req, res, next) {
   const { order_id, product_id } = req;
 
   try {
@@ -15,4 +15,4 @@ async function orederRemoveController(req, res, next) {
   }
 }
 
-module.exports = orederRemoveController;
+module.exports = orderRemoveController;

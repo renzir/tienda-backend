@@ -7,7 +7,7 @@ async function orderRemoveService(orderId, productId) {
     await conn.beginTransaction();
     // validar estado de la orden (dentro de la transacción)
     const [orderRowsRemove] = await conn.execute(
-      "SELECT estado FROM tienda.orden WHERE id = ? FOR UPDATE",
+      "SELECT estado FROM railway.orden WHERE id = ? FOR UPDATE",
       [orderId],
     );
 
