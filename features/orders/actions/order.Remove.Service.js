@@ -28,7 +28,7 @@ async function orderRemoveService(orderId, productId) {
 
     //  ver si el producto está en la orden
     const [orderRows] = await conn.execute(
-      "SELECT cantidad FROM tienda.ordenitems WHERE orden_id = ? AND producto_id = ? FOR UPDATE",
+      "SELECT cantidad FROM railway.ordenitems WHERE orden_id = ? AND producto_id = ? FOR UPDATE",
       [orderId, productId],
     );
 
@@ -45,7 +45,7 @@ async function orderRemoveService(orderId, productId) {
 
     // devolvemos 1 unidad al inventario disponible
     const [stockUpdate] = await conn.execute(
-      `UPDATE tienda.productos 
+      `UPDATE railway.productos 
        SET cantidad_disponible = cantidad_disponible + 1, 
            cantidad_reservada = cantidad_reservada - 1 
        WHERE id = ? AND cantidad_reservada > 0`,
@@ -64,12 +64,12 @@ async function orderRemoveService(orderId, productId) {
     // si solo hay 1 borramos. Sino restamos 1.
     if (cantidadEnOrden === 1) {
       await conn.execute(
-        "DELETE FROM tienda.ordenitems WHERE orden_id = ? AND producto_id = ?",
+        "DELETE FROM railway.ordenitems WHERE orden_id = ? AND producto_id = ?",
         [orderId, productId],
       );
     } else {
       await conn.execute(
-        "UPDATE tienda.ordenitems SET cantidad = cantidad - 1 WHERE orden_id = ? AND producto_id = ?",
+        "UPDATE railway.ordenitems SET cantidad = cantidad - 1 WHERE orden_id = ? AND producto_id = ?",
         [orderId, productId],
       );
     }

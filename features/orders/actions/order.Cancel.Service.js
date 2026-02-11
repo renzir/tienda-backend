@@ -8,7 +8,7 @@ async function orderCancelService(orderId) {
 
     // ver que la orden existe y está PENDIENTE
     const [order] = await conn.execute(
-      "SELECT estado FROM tienda.orden WHERE id = ? FOR UPDATE",
+      "SELECT estado FROM railway.orden WHERE id = ? FOR UPDATE",
       [orderId],
     );
 
@@ -28,7 +28,7 @@ async function orderCancelService(orderId) {
 
     // listar todo lo que hay que devolver al stock
     const [items] = await conn.execute(
-      "SELECT producto_id, cantidad FROM tienda.ordenitems WHERE orden_id = ?",
+      "SELECT producto_id, cantidad FROM railway.ordenitems WHERE orden_id = ?",
       [orderId],
     );
 
@@ -36,7 +36,7 @@ async function orderCancelService(orderId) {
     for (const item of items) {
       try {
         await conn.execute(
-          `UPDATE tienda.productos 
+          `UPDATE railway.productos 
          SET cantidad_reservada = cantidad_reservada - ?, 
          cantidad_vendida= cantidad_vendida + ? 
          WHERE id = ?`,
@@ -54,7 +54,7 @@ async function orderCancelService(orderId) {
 
     // cambiar estado de la orden
     await conn.execute(
-      "UPDATE tienda.orden SET estado = 'cancelado' WHERE id = ?",
+      "UPDATE railway.orden SET estado = 'cancelado' WHERE id = ?",
       [orderId],
     );
 

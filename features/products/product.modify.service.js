@@ -2,7 +2,7 @@ const db = require("../../db/database");
 
 async function modifyProductByIDServices(nombre, precio, id, cantidad_disponible, cantidad_reservada) {
   const [result] = await db.execute(
-    "update tienda.productos set nombre = ?, precio = ?, cantidad_disponible = ?, cantidad_reservada = ? where id = ?",
+    "update railway.productos set nombre = ?, precio = ?, cantidad_disponible = ?, cantidad_reservada = ? where id = ?",
     [nombre, precio,cantidad_disponible, cantidad_reservada, id]
   );
 

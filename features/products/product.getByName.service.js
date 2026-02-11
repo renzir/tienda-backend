@@ -2,7 +2,7 @@ const db = require("../../db/database");
 
 async function getProductNameServices(nombre) {
   const [rows] = await db.execute(
-    "select * from tienda.productos where nombre = ?",
+    "select * from railway.productos where nombre = ?",
     [nombre]
   );
 

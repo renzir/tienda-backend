@@ -2,7 +2,7 @@ const db = require("../../db/database");
 
 async function getProductByID(id) {
   const [product] = await db.execute(
-    "select * from tienda.productos where id = ?",
+    "select * from railway.productos where id = ?",
     [id]
   );
 

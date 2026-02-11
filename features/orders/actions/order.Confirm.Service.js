@@ -7,7 +7,7 @@ async function confirmOrderService(orderId) {
 
     // verificar que la orden existe y está pendiente
     const [order] = await conn.execute(
-      "SELECT estado FROM tienda.orden WHERE id = ? FOR UPDATE",
+      "SELECT estado FROM railway.orden WHERE id = ? FOR UPDATE",
       [orderId],
     );
 
@@ -22,7 +22,7 @@ async function confirmOrderService(orderId) {
 
     // movemos stock de reservada a vendida
     const [items] = await conn.execute(
-      "SELECT producto_id, cantidad FROM tienda.ordenitems WHERE orden_id = ?",
+      "SELECT producto_id, cantidad FROM railway.ordenitems WHERE orden_id = ?",
       [orderId],
     );
 
@@ -30,7 +30,7 @@ async function confirmOrderService(orderId) {
     for (const item of items) {
       try {
         await conn.execute(
-          `UPDATE tienda.productos 
+          `UPDATE railway.productos 
          SET cantidad_reservada = cantidad_reservada - ?, 
          cantidad_vendida= cantidad_vendida + ? 
          WHERE id = ?`,
@@ -47,7 +47,7 @@ async function confirmOrderService(orderId) {
     }
     // cambiar estado a confirmado 
     await conn.execute(
-      "UPDATE tienda.orden SET estado = 'confirmado' WHERE id = ?",
+      "UPDATE railway.orden SET estado = 'confirmado' WHERE id = ?",
       [orderId],
     );
     await conn.commit();

@@ -11,7 +11,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // validar estado de la orden (dentro de la transacción)
     const [orderRows] = await conn.execute(
-      "SELECT estado FROM tienda.orden WHERE id = ? FOR UPDATE",
+      "SELECT estado FROM railway.orden WHERE id = ? FOR UPDATE",
       [order_id],
     );
 
@@ -32,7 +32,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // bloqueo de fila de producto hasta que termine transacción
     const [products] = await conn.execute(
-      "SELECT cantidad_disponible FROM tienda.productos WHERE id = ? FOR UPDATE",
+      "SELECT cantidad_disponible FROM railway.productos WHERE id = ? FOR UPDATE",
       [product_id],
     );
 
@@ -47,7 +47,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // actualiza el stock
     await conn.execute(
-      `UPDATE tienda.productos 
+      `UPDATE railway.productos 
        SET cantidad_disponible = cantidad_disponible - ?, 
            cantidad_reservada = cantidad_reservada + ? 
        WHERE id = ?`,
@@ -56,7 +56,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // inserta o actualiza items
     const upsertQuery = `
-      INSERT INTO tienda.ordenitems (orden_id, producto_id, cantidad, precio_unitario) 
+      INSERT INTO railway.ordenitems (orden_id, producto_id, cantidad, precio_unitario) 
       VALUES (?, ?, ?, ?) 
       ON DUPLICATE KEY UPDATE cantidad = cantidad + VALUES(cantidad)
     `;

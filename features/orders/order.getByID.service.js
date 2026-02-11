@@ -1,7 +1,7 @@
 const db = require("../../db/database");
 
 async function serviceGetProcucts(id) {
-  const result = await db.execute("select * from tienda.orden where id = ?", [
+  const result = await db.execute("select * from railway.orden where id = ?", [
     id,
   ]);
 

@@ -2,7 +2,7 @@ const db = require("../../db/database");
 
 async function orderCreateService(dato_usuario, direccion) {
   const [result] = await db.execute(
-    "insert into tienda.orden set  dato_usuario = ?, direccion = ?",
+    "insert into railway.orden set  dato_usuario = ?, direccion = ?",
     [dato_usuario, direccion],
   );
 
