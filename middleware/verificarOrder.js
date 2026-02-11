@@ -12,6 +12,7 @@ function verificarCreateOrder(req, res, next) {
       .json({ message: "La dirección debe ser una cadena de texto válida" });
   }
 
+  
   next();
 }
 module.exports = verificarCreateOrder;

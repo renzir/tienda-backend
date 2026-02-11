@@ -3,7 +3,7 @@ const db = require("../../db/database");
 async function modifyProductByIDServices(dato_usuario, fecha, id) {
 
   const [result] = await db.execute(
-    "update railway.orden set fecha = ?, dato_usuario = ? where id = ?",
+    "update railway.orden set direccion = ?, dato_usuario = ? where id = ?",
     [fecha, dato_usuario, id]
   );
 
