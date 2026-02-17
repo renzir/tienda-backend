@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(
   cors({
-    origin: process.env.URL_ORIGIN,
+    origin: "https://tienda.renzi.dev",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
