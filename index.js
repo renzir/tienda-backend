@@ -8,12 +8,9 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = process.env.URL_ORIGIN
-  ? process.env.URL_ORIGIN.split(",")
-  : [];
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: process.env.URL_ORIGIN,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
