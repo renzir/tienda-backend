@@ -8,13 +8,16 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
-app.use(cors({
-  origin: "https://tienda-frontend-portafolio.netlify.app", 
-  methods: ["GET", "POST", "PUT", "DELETE"], 
-  credentials: true 
-}));
-
+const allowedOrigins = process.env.URL_ORIGIN
+  ? process.env.URL_ORIGIN.split(",")
+  : [];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
