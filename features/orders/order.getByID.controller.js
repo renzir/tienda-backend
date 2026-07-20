@@ -1,15 +1,18 @@
-const ordersGetByIDService = require("./order.getByID.service");
+const getOrderByIdService = require("./order.getByID.service");
 
-async function ordersGetController(req, res) {
-  const id = req.id;
+async function ordersGetController(req, res, next) {
+  try {
+    const id = req.id;
 
-  const result = await ordersGetByIDService(id);
+  const result = await getOrderByIdService(id);
 
   if (result) return res.status(200).json({ success: true, data: result });
 
-  if (!result)
     return res
       .status(404)
       .json({ success: false, message: "Fallo en encontrar orden" });
+  } catch (error) {
+    next(error);
+  }
 }
 module.exports = ordersGetController;

@@ -1,20 +1,22 @@
 const deteleProductSerices = require("./product.detele.service");
 
-async function deteleProductController(req, res) {
+async function deteleProductController(req, res, next) {
+  try {
   const id = req.id;
-
-  console.log(id);
 
   const result = await deteleProductSerices(id);
 
   if (result)
     return res
       .status(200)
-      .json({ succes: true, message: "Producto eliminado" });
+      .json({ success: true, message: "Producto eliminado" });
 
-  if (!result)
     return res
       .status(404)
       .json({ success: false, message: "Fallo en eliminar producto" });
+  } catch (error) {
+    next(error);
+}
 }
 module.exports = deteleProductController;
+

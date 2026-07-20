@@ -1,17 +1,31 @@
 const db = require("../../../db/database");
 
-
 async function orderAddProductService(order_id, product_id, cantidad, precio) {
-  // conexion única del pool para la transacción
-  const conn = await db.getConnection();
-
   try {
+    // Validación básica de entrada
+    if (!order_id || isNaN(order_id)) {
+      return { success: false, status: 400, message: "ID de orden inválido" };
+    }
+    if (!product_id || isNaN(product_id)) {
+      return { success: false, status: 400, message: "ID de producto inválido" };
+    }
+    if (!cantidad || cantidad <= 0) {
+      return { success: false, status: 400, message: "Cantidad inválida" };
+    }
+    if (precio === undefined || precio < 0) {
+      return { success: false, status: 400, message: "Precio inválido" };
+    }
+
+    // conexion única del pool para la transacción
+    const conn = await db.getConnection();
+
+    try {
     // inicio de transacción
     await conn.beginTransaction();
 
     // validar estado de la orden (dentro de la transacción)
     const [orderRows] = await conn.execute(
-      "SELECT estado FROM railway.orden WHERE id = ? FOR UPDATE",
+      "SELECT estado FROM orden WHERE id = ? FOR UPDATE",
       [order_id],
     );
 
@@ -32,7 +46,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // bloqueo de fila de producto hasta que termine transacción
     const [products] = await conn.execute(
-      "SELECT cantidad_disponible FROM railway.productos WHERE id = ? FOR UPDATE",
+      "SELECT cantidad_disponible FROM productos WHERE id = ? FOR UPDATE",
       [product_id],
     );
 
@@ -47,7 +61,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // actualiza el stock
     await conn.execute(
-      `UPDATE railway.productos 
+      `UPDATE productos
        SET cantidad_disponible = cantidad_disponible - ?, 
            cantidad_reservada = cantidad_reservada + ? 
        WHERE id = ?`,
@@ -56,7 +70,7 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
 
     // inserta o actualiza items
     const upsertQuery = `
-      INSERT INTO railway.ordenitems (orden_id, producto_id, cantidad, precio_unitario) 
+      INSERT INTO ordenitems (orden_id, producto_id, cantidad, precio_unitario)
       VALUES (?, ?, ?, ?) 
       ON DUPLICATE KEY UPDATE cantidad = cantidad + VALUES(cantidad)
     `;
@@ -73,11 +87,15 @@ async function orderAddProductService(order_id, product_id, cantidad, precio) {
   } catch (error) {
     // rollback por si algo falla y lanzamos error
     await conn.rollback();
-    throw error;
+      throw new Error(`Error al añadir producto a la orden: ${error.message}`);
   } finally {
     // liberar conección
     conn.release();
   }
+  } catch (error) {
+    throw new Error(`Error al añadir producto a la orden: ${error.message}`);
+}
 }
 
 module.exports = orderAddProductService;
+

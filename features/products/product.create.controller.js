@@ -1,7 +1,8 @@
 const createProductServices = require("./product.create.services");
 const getProductNameServices = require("./product.getByName.service");
 
-async function createProductController(req, res) {
+async function createProductController(req, res, next) {
+  try {
   const { nombre, precio, cantidad_disponible } = req.body;
 
   const product = await getProductNameServices(nombre);
@@ -18,11 +19,15 @@ async function createProductController(req, res) {
   );
 
   if (result) {
-    res.status(200).json({ success: true, message: "Producto creado" });
+      return res.status(200).json({ success: true, message: "Producto creado" });
   } else {
     return res
       .status(400)
       .json({ success: false, message: "Fallo en crear producto" });
   }
+  } catch (error) {
+    next(error);
+}
 }
 module.exports = createProductController;
+

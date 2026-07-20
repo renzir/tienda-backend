@@ -2,10 +2,10 @@ const db = require("../../db/database");
 
 async function getProductByID(id) {
   const [product] = await db.execute(
-    "select * from railway.productos where id = ?",
+    "SELECT * FROM productos WHERE id = ?",
     [id]
   );
-
-  return product[0] || null;
+  return product || null;
 }
 module.exports = getProductByID;
+

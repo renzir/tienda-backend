@@ -1,13 +1,22 @@
 const db = require("../../../db/database");
 
 async function orderRemoveService(orderId, productId) {
-  const conn = await db.getConnection();
-
   try {
+    // Validación básica de entrada
+    if (!orderId || isNaN(orderId)) {
+      return { success: false, status: 400, message: "ID de orden inválido" };
+    }
+    if (!productId || isNaN(productId)) {
+      return { success: false, status: 400, message: "ID de producto inválido" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
     await conn.beginTransaction();
     // validar estado de la orden (dentro de la transacción)
     const [orderRowsRemove] = await conn.execute(
-      "SELECT estado FROM railway.orden WHERE id = ? FOR UPDATE",
+      "SELECT estado FROM orden WHERE id = ? FOR UPDATE",
       [orderId],
     );
 
@@ -22,13 +31,13 @@ async function orderRemoveService(orderId, productId) {
         success: false,
         status: 400,
         message:
-          "No se pueden añadir productos a una orden que no esté pendiente",
+            "No se pueden modificar productos de una orden que no esté pendiente",
       };
     }
 
     //  ver si el producto está en la orden
     const [orderRows] = await conn.execute(
-      "SELECT cantidad FROM railway.ordenitems WHERE orden_id = ? AND producto_id = ? FOR UPDATE",
+      "SELECT cantidad FROM ordenitems WHERE orden_id = ? AND producto_id = ? FOR UPDATE",
       [orderId, productId],
     );
 
@@ -45,7 +54,7 @@ async function orderRemoveService(orderId, productId) {
 
     // devolvemos 1 unidad al inventario disponible
     const [stockUpdate] = await conn.execute(
-      `UPDATE railway.productos 
+      `UPDATE productos
        SET cantidad_disponible = cantidad_disponible + 1, 
            cantidad_reservada = cantidad_reservada - 1 
        WHERE id = ? AND cantidad_reservada > 0`,
@@ -57,19 +66,19 @@ async function orderRemoveService(orderId, productId) {
       return {
         success: false,
         status: 409,
-        message: "Error: no hay reservas que devolver",
+          message: "Error: no hay reservas suficientes para devolver",
       };
     }
 
     // si solo hay 1 borramos. Sino restamos 1.
     if (cantidadEnOrden === 1) {
       await conn.execute(
-        "DELETE FROM railway.ordenitems WHERE orden_id = ? AND producto_id = ?",
+        "DELETE FROM ordenitems WHERE orden_id = ? AND producto_id = ?",
         [orderId, productId],
       );
     } else {
       await conn.execute(
-        "UPDATE railway.ordenitems SET cantidad = cantidad - 1 WHERE orden_id = ? AND producto_id = ?",
+        "UPDATE ordenitems SET cantidad = cantidad - 1 WHERE orden_id = ? AND producto_id = ?",
         [orderId, productId],
       );
     }
@@ -82,11 +91,14 @@ async function orderRemoveService(orderId, productId) {
     };
   } catch (error) {
     await conn.rollback();
-
-    throw error;
+      throw new Error(`Error al eliminar producto de la orden: ${error.message}`);
   } finally {
     conn.release();
   }
+  } catch (error) {
+    throw new Error(`Error al eliminar producto de la orden: ${error.message}`);
+}
 }
 
 module.exports = orderRemoveService;
+

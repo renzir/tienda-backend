@@ -19,5 +19,5 @@ app.patch("/modifyProduct", verificarDatosProducts, modifyProductController);
 
 app.post("/createProduct", verificarCreateProduct, createProductController);
 
-app.delete("/deteleProduct/:id", verficarIDParams, deteleProductController);
+app.delete("/deleteProduct/:id", verficarIDParams, deteleProductController);
 module.exports = app;

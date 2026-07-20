@@ -1,8 +1,6 @@
-const db = require("../../db/database");
-
 async function deteleProductSerices(id) {
   const [result] = await db.execute(
-    "delete from railway.productos where id = ?",
+    "DELETE FROM productos WHERE id = ?",
     [id]
   );
 
@@ -12,4 +10,3 @@ async function deteleProductSerices(id) {
     return false;
   }
 }
-module.exports = deteleProductSerices;

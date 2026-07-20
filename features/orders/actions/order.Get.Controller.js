@@ -1,12 +1,11 @@
-
-const getProductService = require("./order.Get.Service");
+const getOrderItemsService = require("./order.Get.Service");
 
 async function getProductController(req, res, next) {
   
   const { id } = req.params;
 
   try {
-    const result = await getProductService(id);
+    const result = await getOrderItemsService(id);
 
    
     return res.status(result.status).json({

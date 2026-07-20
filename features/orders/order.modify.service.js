@@ -1,16 +1,22 @@
 const db = require("../../db/database");
 
-async function modifyProductByIDServices(dato_usuario, fecha, id) {
-
-  const [result] = await db.execute(
-    "update railway.orden set direccion = ?, dato_usuario = ? where id = ?",
-    [fecha, dato_usuario, id]
-  );
-
-  if (result.affectedRows == 1) {
-    return true;
-  } else {
+async function modifyOrderService(dato_usuario, direccion, id) {
+  try {
+    // Validación básica de entrada
+    if (!dato_usuario || !direccion || !id) {
     return false;
   }
+
+    const [result] = await db.execute(
+      "UPDATE orden SET dato_usuario = ?, direccion = ? WHERE id = ?",
+      [dato_usuario, direccion, id]
+    );
+
+    return result.affectedRows === 1;
+  } catch (error) {
+    throw new Error(`Error al modificar la orden: ${error.message}`);
 }
-module.exports = modifyProductByIDServices;
+}
+
+module.exports = modifyOrderService;
+

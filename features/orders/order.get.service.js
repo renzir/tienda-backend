@@ -1,12 +1,13 @@
 const db = require("../../db/database");
 
-async function serviceGetProcucts() {
-  const result = await db.execute("select * from railway.orden");
-
-  if (result[0].length === 0) {
-    return false;
-  } else {
-    return result[0];
+async function getAllOrders() {
+  try {
+    const result = await db.execute("SELECT * FROM orden");
+    return result[0] && result[0].length > 0 ? result[0] : null;
+  } catch (error) {
+    throw new Error(`Error al obtener las órdenes: ${error.message}`);
   }
 }
-module.exports = serviceGetProcucts;
+
+module.exports = getAllOrders;
+

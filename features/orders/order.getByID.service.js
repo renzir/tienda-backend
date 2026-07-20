@@ -1,14 +1,19 @@
 const db = require("../../db/database");
 
-async function serviceGetProcucts(id) {
-  const result = await db.execute("select * from railway.orden where id = ?", [
-    id,
-  ]);
+async function getOrderById(id) {
+  try {
+    // Validación básica del ID
+    if (!id || isNaN(id)) {
+      return null;
+    }
+    const result = await db.execute("SELECT * FROM orden WHERE id = ?", [id]);
 
-  if (result[0].length == 0) {
-    return false;
-  } else {
-    return result[0];
+    // Devolver el primer elemento si existe, o null si no hay resultados
+    return result[0] && result[0].length > 0 ? result[0][0] : null;
+  } catch (error) {
+    throw new Error(`Error al obtener la orden: ${error.message}`);
   }
 }
-module.exports = serviceGetProcucts;
+
+module.exports = getOrderById;
+

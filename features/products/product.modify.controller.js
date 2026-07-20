@@ -1,14 +1,16 @@
 const getProductByID = require("./product.getByID.service");
 const modifyProductByID = require("./product.modify.service");
 
-async function modifyProductController(req, res) {
+async function modifyProductController(req, res, next) {
+  try {
   const { id, nombre, precio, cantidad_disponible, cantidad_reservada } =
     req.body;
 
   const product = await getProductByID(id);
 
-  if (!product) throw new AppError("Producto no existe", 404);
-
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado" });
+    }
   const result = await modifyProductByID(
     nombre,
     precio,
@@ -23,10 +25,13 @@ async function modifyProductController(req, res) {
       message: "Modificacion existosa",
     });
   }
-  if (!result) {
     return res
       .status(204)
       .json({ success: false, message: "Modificacion incorrrecta" });
+  } catch (error) {
+    next(error);
   }
 }
 module.exports = modifyProductController;
+
+
