@@ -15,3 +15,6 @@ Thumbs.db
 
 # Build outputs (si tenés)
 dist/
+node_modules/
+coverage/
+.vscode/

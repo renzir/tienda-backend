@@ -1,12 +1,12 @@
 const orderAddProductService = require("./order.AddProduct.service");
-const getProductById = require("../../products/product.getByID.service");
+const { getProductByID } = require("../../products/product.services");
 
 async function orderActionAdd(req, res, next) {
   const { cantidad } = req.body;
   const order_id = req.order_id;
   const product_id = req.product_id;
   try {
-    const productbyid = await getProductById(product_id);
+    const productbyid = await getProductByID(product_id);
     if (!productbyid || !productbyid.precio) {
       return res.status(404).json({
         success: false,

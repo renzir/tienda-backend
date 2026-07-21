@@ -1,11 +1,9 @@
 const request = require("supertest");
 const app = require("../app");
 const pool = require("../db/database");
-const resetAndSeedDatabase = require("./resetdb");
 
 describe("Product Integration Tests", () => {
-  beforeEach(async () => {
-    await resetAndSeedDatabase();
+  beforeAll(async () => {
     console.log("Base de datos lista para pruebas integration");
   });
 
@@ -45,7 +43,6 @@ describe("Product Integration Tests", () => {
         precio: 39.99,
         cantidad_disponible: 10,
       });
-
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
     });

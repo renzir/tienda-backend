@@ -1,13 +1,14 @@
 const express = require("express");
-const verificarDatosProducts = require("../../middleware/verificarDatosProducts");
-const verficarIDParams = require("../../middleware/verficarIDParams");
-const getProductsController = require("./product.get.controller");
-const getProductByIDController = require("./product.getByID.controller");
-const modifyProductController = require("./product.modify.controller");
-const createProductController = require("./product.create.controller");
-const deteleProductController = require("./product.detele.controller");
-const verificarCreateProduct = require("../../middleware/verificarCreateProduct");
-
+const verificarDatosProducts = require("../../middleware/validateProductUpdate.js");
+const verficarIDParams = require("../../middleware/validateProductId.js");
+const {
+  getProductsController,
+  getProductByIDController,
+  modifyProductController,
+  createProductController,
+  deteleProductController,
+} = require("./product.controller");
+const verificarCreateProduct = require("../../middleware/validateProductCreation.js");
 
 const app = express.Router();
 
