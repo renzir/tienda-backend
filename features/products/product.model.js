@@ -1,4 +1,3 @@
-// ... existing code ...
 const db = require("../../db/database");
 
 const Product = {

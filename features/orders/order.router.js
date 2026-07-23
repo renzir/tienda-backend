@@ -1,43 +1,147 @@
 const express = require("express");
-const ordersGetController = require("./order.get.controller");
-const orderCreateController = require("./order.create.controller");
-const verificarOrder = require("../../middleware/validateOrderCreation.js");
-const orderGetByIDController = require("./order.getByID.controller");
-const verficarIDParams = require("../../middleware/validateProductId.js");
-const orderDeteleController = require("./order.detele.controller");
-const orderModifyController = require("./order.modify.controller");
-const orderAddProductController = require("./actions/order.AddProduct.Controller");
-const verficarOrderIDParams = require("../../middleware/validateOrderId.js");
-const verficarOrderProductIDParams = require("../../middleware/validateOrderProductIds.js");
-const orderRemoveController = require("../orders/actions/order.Remove.controller");
-const orderConfirmController = require("./actions/order.Confirm.controller");
-const orderCancelController = require("./actions/order.Cancel.Controller");
-const getProductController = require("./actions/order.Get.Controller");
+const OrderController = require("./order.controller");
+const validateOrderCreation = require("../../middleware/validateOrderCreation.js");
 
-const app = express.Router();
+const router = express.Router();
 
-app.get("/getOrders", ordersGetController);
+/**
+ * @openapi
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Obtiene detalles de una orden por ID
+ *     tags: [Ordenes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Detalles de la orden
+ *       404:
+ *         description: Orden no encontrada
+ */
+router.get("/:id", OrderController.getOrderDetails);
 
-app.post("/createOrder", verificarOrder, orderCreateController);
+/**
+ * @openapi
+ * /api/orders:
+ *   get:
+ *     summary: Obtiene todas las órdenes
+ *     tags: [Ordenes]
+ *     responses:
+ *       200:
+ *         description: Lista de órdenes
+ */
+router.get("/", OrderController.getOrders);
 
-app.get("/getOrder/:id", verficarIDParams, orderGetByIDController);
+/**
+ * @openapi
+ * /api/orders:
+ *   post:
+ *     summary: Crea una nueva orden
+ *     tags: [Ordenes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [dato_usuario, direccion]
+ *             properties:
+ *               dato_usuario: { type: string }
+ *               direccion: { type: string }
+ *     responses:
+ *       201:
+ *         description: Orden creada
+ */
+router.post("/", validateOrderCreation, OrderController.createOrder);
 
-app.patch("/modifiyOrder", verificarOrder, orderModifyController);
+/**
+ * @openapi
+ * /api/orders/{id}/product/{productId}:
+ *   post:
+ *     summary: Añade un producto a la orden
+ *     tags: [Ordenes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cantidad, precio]
+ *             properties:
+ *               cantidad: { type: integer }
+ *               precio: { type: number }
+ *     responses:
+ *       201:
+ *         description: Producto añadido
+ */
+router.post("/:id/product/:productId", OrderController.addProduct);
 
-app.delete("/deteleOrder/:id", verficarIDParams, orderDeteleController);
+/**
+ * @openapi
+ * /api/orders/{id}/product/{productId}:
+ *   delete:
+ *     summary: Elimina un producto de la orden
+ *     tags: [Ordenes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Producto eliminado
+ */
+router.delete("/:id/product/:productId", OrderController.removeProduct);
 
-app.post(
-  "/:orderid/product/:productid",
-  verficarOrderProductIDParams,
-  orderAddProductController,
-);
+/**
+ * @openapi
+ * /api/orders/{id}/cancel:
+ *   patch:
+ *     summary: Cancela una orden
+ *     tags: [Ordenes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Orden cancelada
+ */
+router.patch("/:id/cancel", OrderController.cancelOrder);
 
-app.delete(
-  "/:orderid/product/:productid",
-  verficarOrderProductIDParams,
-  orderRemoveController,
-);
-app.post("/:id/confirm", verficarIDParams, orderConfirmController);
-app.post("/:id/cancel", verficarIDParams, orderCancelController);
-app.get("/:id/getProducts", verficarIDParams, getProductController);
-module.exports = app;
+/**
+ * @openapi
+ * /api/orders/{id}/confirm:
+ *   patch:
+ *     summary: Confirma una orden
+ *     tags: [Ordenes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Orden confirmada
+ */
+router.patch("/:id/confirm", OrderController.confirmOrder);
+
+module.exports = router;
+

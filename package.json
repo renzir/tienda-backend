@@ -7,17 +7,22 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage --verbose",
+    "test": "jest --coverage --verbose --runInBand",
     "start": "node index.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "mysql2": "^3.16.0"
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.16.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "chai": "^5.1.0",
     "jest": "^30.4.2",
     "supertest": "^7.2.2"
   },
@@ -29,6 +34,10 @@
     "collectCoverageFrom": [
       "features/**/*.js",
       "middleware/**/*.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/tests/backup/"
     ]
   }
 }

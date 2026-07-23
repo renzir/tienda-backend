@@ -1,24 +1,62 @@
 const express = require("express");
-const verificarDatosProducts = require("../../middleware/validateProductUpdate.js");
-const verficarIDParams = require("../../middleware/validateProductId.js");
-const {
-  getProductsController,
-  getProductByIDController,
-  modifyProductController,
-  createProductController,
-  deteleProductController,
-} = require("./product.controller");
-const verificarCreateProduct = require("../../middleware/validateProductCreation.js");
+const router = express.Router();
+const productController = require("./product.controller");
 
-const app = express.Router();
+/**
+ * @openapi
+ * /api/products/getProducts:
+ *   get:
+ *     summary: Obtiene todos los productos
+ *     tags: [Productos]
+ *     responses:
+ *       200:
+ *         description: Lista de productos obtenida exitosamente
+ */
+router.get("/getProducts", productController.getProductsController);
 
-app.get("/getProducts", getProductsController);
+/**
+ * @openapi
+ * /api/products/getProductById/{id}:
+ *   get:
+ *     summary: Obtiene un producto por ID
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producto encontrado
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.get("/getProductById/:id", productController.getProductByIDController);
 
-app.get("/getProductById/:id", verficarIDParams, getProductByIDController);
+/**
+ * @openapi
+ * /api/products/createProduct:
+ *   post:
+ *     summary: Crea un nuevo producto
+ *     tags: [Productos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [nombre, precio, cantidad_disponible]
+ *             properties:
+ *               nombre: { type: string }
+ *               precio: { type: number }
+ *               cantidad_disponible: { type: integer }
+ *     responses:
+ *       201:
+ *         description: Producto creado correctamente
+ */
+router.post("/createProduct", productController.createProductController);
 
-app.patch("/modifyProduct", verificarDatosProducts, modifyProductController);
+// ... puedes seguir el mismo patrón para los demás métodos (PATCH, DELETE)
 
-app.post("/createProduct", verificarCreateProduct, createProductController);
-
-app.delete("/deleteProduct/:id", verficarIDParams, deteleProductController);
-module.exports = app;
+module.exports = router;

@@ -3,26 +3,47 @@ const pool = require("../db/database");
 
 const resetAndSeedDatabase = async () => {
   try {
-    // Connect to the database
     const connection = await pool.getConnection();
 
-    // Clear existing data
-    await connection.execute("DELETE FROM productos");
-    await connection.execute("ALTER TABLE productos AUTO_INCREMENT = 1");
+    // Desactivar FK checks para poder borrar en cualquier orden
+    await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
 
-    // Seed initial data
+    // Limpiar datos de órdenes y productos
+    await connection.execute("DELETE FROM ordenitems");
+    await connection.execute("DELETE FROM orden");
+    await connection.execute("DELETE FROM productos");
+    // 1. Añadir limpieza de usuarios
+    await connection.execute("DELETE FROM usuarios");
+
+    // Resetear AUTO_INCREMENT
+    await connection.execute("ALTER TABLE orden AUTO_INCREMENT = 1");
+    await connection.execute("ALTER TABLE productos AUTO_INCREMENT = 1");
+    await connection.execute("ALTER TABLE usuarios AUTO_INCREMENT = 1");
+
+    // Sembrar productos iniciales con IDs fijos (importante para tests de órdenes)
     await connection.execute(
-      "INSERT INTO productos (nombre, precio, cantidad_disponible) VALUES (?, ?, ?)",
-      ["Test Product 1", 10.99, 100]
+      "INSERT INTO productos (id, nombre, precio, cantidad_disponible) VALUES (?, ?, ?, ?)",
+      [1, "Test Product 1", 10.99, 100], // Insertar con ID 1
     );
     await connection.execute(
-      "INSERT INTO productos (nombre, precio, cantidad_disponible) VALUES (?, ?, ?)",
-      ["Test Product 2", 20.50, 50]
+      "INSERT INTO productos (id, nombre, precio, cantidad_disponible) VALUES (?, ?, ?, ?)",
+      [2, "Test Product 2", 20.5, 50], // Insertar con ID 2
     );
     await connection.execute(
-        "INSERT INTO productos (nombre, precio, cantidad_disponible) VALUES (?, ?, ?)",
-        ["Test Product 3", 25.00, 75]
-      );
+      "INSERT INTO productos (id, nombre, precio, cantidad_disponible) VALUES (?, ?, ?, ?)",
+      [3, "Test Product 3", 25.0, 75], // Insertar con ID 3
+    );
+
+    // 2. Insertar un usuario de prueba
+    await connection.execute(
+      "INSERT INTO usuarios (id, nombre, email, password) VALUES (?, ?, ?, ?)",
+      [1, "Test User", "test@test.com", "hash_password"]
+    );
+
+    // NOTA: Hemos eliminado la inserción de una orden fija aquí.
+    // Las órdenes se crearán dinámicamente en los beforeEach de los tests de órdenes.
+    // Reactivar FK checks
+    await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
 
     connection.release();
   } catch (error) {
@@ -32,3 +53,4 @@ const resetAndSeedDatabase = async () => {
 };
 
 module.exports = resetAndSeedDatabase;
+

@@ -237,9 +237,10 @@ describe("Product Controller Unit Tests", () => {
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        succes: true,
+        success: true, // Corregido: 'succes' a 'success'
         message: "Producto eliminado",
       });
     });
   });
 });
+

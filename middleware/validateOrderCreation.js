@@ -1,10 +1,10 @@
 function verificarCreateOrder(req, res, next) {
-  const { dato_usuario, direccion } = req.body;
+  const { usuario_id, direccion } = req.body;
 
-  if (!dato_usuario || typeof dato_usuario !== "string") {
+  if (!usuario_id || typeof usuario_id !== "number") {
     return res
       .status(400)
-      .json({ message: "Escriba una cadena de texto válida para el usuario" });
+      .json({ message: "Se requiere un ID de usuario numérico válido" });
   }
   if (!direccion || typeof direccion !== "string") {
     return res
@@ -12,7 +12,8 @@ function verificarCreateOrder(req, res, next) {
       .json({ message: "La dirección debe ser una cadena de texto válida" });
   }
 
-  
+
   next();
 }
 module.exports = verificarCreateOrder;
+
