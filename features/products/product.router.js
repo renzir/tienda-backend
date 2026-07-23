@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const productController = require("./product.controller");
+const validateProductId = require("../../middleware/validateProductId");
+const validateProductCreation = require("../../middleware/validateProductCreation");
+const validateProductUpdate = require("../../middleware/validateProductUpdate");
 
 /**
  * @openapi
@@ -32,7 +35,23 @@ router.get("/getProducts", productController.getProductsController);
  *       404:
  *         description: Producto no encontrado
  */
-router.get("/getProductById/:id", productController.getProductByIDController);
+router.get(
+  "/getProductById/:id",
+  validateProductId,
+  productController.getProductByIDController,
+);
+
+router.patch(
+  "/modifyProduct",
+  validateProductUpdate,
+  productController.modifyProductController,
+);
+
+router.delete(
+  "/deleteProduct/:id",
+  validateProductId,
+  productController.deteleProductController,
+);
 
 /**
  * @openapi
@@ -55,8 +74,11 @@ router.get("/getProductById/:id", productController.getProductByIDController);
  *       201:
  *         description: Producto creado correctamente
  */
-router.post("/createProduct", productController.createProductController);
-
-// ... puedes seguir el mismo patrón para los demás métodos (PATCH, DELETE)
+router.post(
+  "/createProduct",
+  validateProductCreation,
+  productController.createProductController,
+);
 
 module.exports = router;
+

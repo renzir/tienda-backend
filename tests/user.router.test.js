@@ -5,10 +5,8 @@ const pool = require("../db/database");
 const resetAndSeedDatabase = require("./resetdb");
 
 describe("User Integration Tests", () => {
-  // Limpiar tabla de usuarios antes de cada prueba
   beforeEach(async () => {
     await resetAndSeedDatabase();
-    // Eliminar usuarios creados en pruebas anteriores para mantener consistencia
     const [result] = await pool.execute("DELETE FROM usuarios");
     console.log("Base de datos lista para pruebas de usuarios");
   });
@@ -26,9 +24,7 @@ describe("User Integration Tests", () => {
         password: "password123",
       };
 
-      const response = await request(app)
-        .post("/users/register")
-        .send(newUser);
+      const response = await request(app).post("/users/register").send(newUser);
 
       expect(response.statusCode).toBe(201);
       expect(response.body.success).toBe(true);
@@ -42,7 +38,6 @@ describe("User Integration Tests", () => {
       const incompleteUser = {
         nombre: "Ana López",
         email: "ana@example.com",
-        // Falta password
       };
 
       const response = await request(app)
@@ -61,10 +56,8 @@ describe("User Integration Tests", () => {
         password: "password123",
       };
 
-      // Registrar primer usuario
       await request(app).post("/users/register").send(user1);
 
-      // Intentar registrar con el mismo email
       const duplicateUser = {
         nombre: "Luis Martínez 2",
         email: "luis@example.com",
@@ -83,7 +76,6 @@ describe("User Integration Tests", () => {
 
   describe("POST /users/login", () => {
     it("should login successfully with valid credentials", async () => {
-      // Primero registrar un usuario
       const newUser = {
         nombre: "María Rodríguez",
         email: "maria@example.com",
@@ -92,13 +84,10 @@ describe("User Integration Tests", () => {
 
       await request(app).post("/users/register").send(newUser);
 
-      // Ahora intentar loguearse
-      const loginResponse = await request(app)
-        .post("/users/login")
-        .send({
-          email: newUser.email,
-          password: newUser.password,
-        });
+      const loginResponse = await request(app).post("/users/login").send({
+        email: newUser.email,
+        password: newUser.password,
+      });
 
       expect(loginResponse.statusCode).toBe(200);
       expect(loginResponse.body.success).toBe(true);
@@ -109,12 +98,9 @@ describe("User Integration Tests", () => {
     });
 
     it("should return 400 when missing fields", async () => {
-      const response = await request(app)
-        .post("/users/login")
-        .send({
-          email: "test@example.com",
-          // Falta password
-        });
+      const response = await request(app).post("/users/login").send({
+        email: "test@example.com",
+      });
 
       expect(response.statusCode).toBe(400);
       expect(response.body.success).toBe(false);
@@ -122,12 +108,10 @@ describe("User Integration Tests", () => {
     });
 
     it("should return 401 when user not found", async () => {
-      const response = await request(app)
-        .post("/users/login")
-        .send({
-          email: "noexiste@example.com",
-          password: "password123",
-        });
+      const response = await request(app).post("/users/login").send({
+        email: "noexiste@example.com",
+        password: "password123",
+      });
 
       expect(response.statusCode).toBe(401);
       expect(response.body.success).toBe(false);
@@ -135,7 +119,6 @@ describe("User Integration Tests", () => {
     });
 
     it("should return 401 when password is incorrect", async () => {
-      // Primero registrar un usuario
       const newUser = {
         nombre: "Pedro Sánchez",
         email: "pedro@example.com",
@@ -144,13 +127,10 @@ describe("User Integration Tests", () => {
 
       await request(app).post("/users/register").send(newUser);
 
-      // Intentar loguearse con contraseña incorrecta
-      const response = await request(app)
-        .post("/users/login")
-        .send({
-          email: newUser.email,
-          password: "wrongPassword",
-        });
+      const response = await request(app).post("/users/login").send({
+        email: newUser.email,
+        password: "wrongPassword",
+      });
 
       expect(response.statusCode).toBe(401);
       expect(response.body.success).toBe(false);

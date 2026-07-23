@@ -21,7 +21,6 @@ const options = {
       },
     },
   },
-  // Escanea tus archivos de rutas
   apis: ['./features/**/*.router.js'], 
 };
 

@@ -1,7 +1,7 @@
 const OrderRepository = require("./order.repository");
-const TransactionManager = require("../../db/transaction"); // Ajustar ruta
-const { AppError } = require("../../middleware/errorHandler"); // Asumiendo que tienes esto, si no, usa class Error extendida
-const db = require("../../db/database"); // <--- Añadir esta línea para db connection
+const TransactionManager = require("../../db/transaction"); 
+const { AppError } = require("../../middleware/errorHandler");
+const db = require("../../db/database"); 
 
 class OrderService {
   /**
@@ -74,13 +74,11 @@ class OrderService {
     }
 
     return await TransactionManager.executeWithTransaction(async (conn) => {
-      // 1. Validar orden pendiente
       const order = await OrderRepository.getLockedOrderById(conn, orderId);
       if (!order) throw new AppError("Orden no encontrada", 404);
       if (order.estado !== "pendiente")
         throw new AppError("La orden ya está procesada o cancelada", 400);
 
-      // 2. Validar stock disponible (Bloqueo row-level)
       const [products] = await conn.execute(
         "SELECT cantidad_disponible FROM productos WHERE id = ? FOR UPDATE",
         [productId],
@@ -91,8 +89,6 @@ class OrderService {
         throw new AppError("Stock insuficiente del proveedor", 409);
       }
 
-      // 3. Aplicar cambios
-      // Restamos disponible, sumamos reservada
       await OrderRepository.updateStock(
         conn,
         productId,
@@ -119,18 +115,15 @@ class OrderService {
    */
   static async removeProductFromOrder(orderId, productId) {
     return await TransactionManager.executeWithTransaction(async (conn) => {
-      // 1. Validate order
       const order = await OrderRepository.getLockedOrderById(conn, orderId);
       if (!order) throw new AppError("Orden no encontrada", 404);
       if (order.estado !== "pendiente")
         throw new AppError("Solo se pueden modificar órdenes pendientes", 400);
 
-      // 2. Validate product exists in order
       const items = await OrderRepository.getOrderItems(conn, orderId);
       const item = items.find((i) => i.producto_id == productId);
       if (!item) throw new AppError("Producto no encontrado en la orden", 404);
 
-      // 3. Revert stock: Disponible += qty, Reservada -= qty
       await OrderRepository.updateStock(
         conn,
         productId,
@@ -139,7 +132,6 @@ class OrderService {
         0,
       );
 
-      // 4. Remove item
       await conn.execute(
         "DELETE FROM ordenitems WHERE orden_id = ? AND producto_id = ?",
         [orderId, productId],
@@ -159,12 +151,9 @@ class OrderService {
       if (order.estado !== "pendiente")
         throw new AppError("Solo se pueden cancelar órdenes pendientes", 400);
 
-      // Obtener items dentro de la transacción para saber qué stock devolver
       const items = await OrderRepository.getOrderItems(conn, orderId);
 
-      // Devolver stock: Disponible += cantidad, Reservada -= cantidad
       for (const item of items) {
-        // Verificamos si hay suficiente reserva antes de actualizar
         const [check] = await conn.execute(
           "SELECT cantidad_reservada FROM productos WHERE id = ? FOR UPDATE",
           [item.producto_id],
@@ -185,7 +174,6 @@ class OrderService {
         );
       }
 
-      // Actualizar estado orden y borrar items (opcional, según requerimiento)
       await OrderRepository.updateOrderStatus(conn, orderId, "cancelado");
       await conn.execute("DELETE FROM ordenitems WHERE orden_id = ?", [
         orderId,
@@ -200,20 +188,17 @@ class OrderService {
    */
   static async confirmOrder(orderId) {
     return await TransactionManager.executeWithTransaction(async (conn) => {
-      // 1. Lock and Validate Order
       const order = await OrderRepository.getLockedOrderById(conn, orderId);
       if (!order) throw new AppError("Orden no encontrada", 404);
       if (order.estado !== "pendiente")
         throw new AppError("Solo se pueden confirmar órdenes pendientes", 400);
 
-      // 2. Get Items
       const items = await OrderRepository.getOrderItems(conn, orderId);
 
       if (items.length === 0) {
         throw new AppError("La orden no tiene productos", 400);
       }
 
-      // 3. Verify Stock Availability for ALL items before updating
       for (const item of items) {
         const [products] = await conn.execute(
           "SELECT cantidad_disponible, cantidad_reservada FROM productos WHERE id = ? FOR UPDATE",
@@ -223,7 +208,6 @@ class OrderService {
         if (!products.length)
           throw new AppError(`Producto ${item.producto_id} no encontrado`, 404);
 
-        // Validar que hay suficiente cantidad_reservada para mover a vendido
         if (products[0].cantidad_reservada < item.cantidad) {
           throw new AppError(
             `Stock reservado insuficiente para el producto ${item.producto_id}. Reservado: ${products[0].cantidad_reservada}, Necesario: ${item.cantidad}`,
@@ -231,18 +215,16 @@ class OrderService {
           );
         }
       }
-      // 4. Apply Changes (Second pass or combined logic)
       for (const item of items) {
         await OrderRepository.updateStock(
           conn,
           item.producto_id,
-          0, // No se modifica el stock disponible en este paso si ya estaba reservado.
-          -item.cantidad, // Se resta de cantidad_reservada
-          +item.cantidad, // Se suma a cantidad_vendida
+          0, 
+          -item.cantidad, 
+          +item.cantidad, 
         );
       }
 
-      // 5. Update Order Status
       await OrderRepository.updateOrderStatus(conn, orderId, "confirmada");
 
       return { message: "Orden confirmada y stock vendido" };
@@ -251,4 +233,3 @@ class OrderService {
 }
 
 module.exports = OrderService;
-

@@ -67,7 +67,7 @@ async function modifyProductController(req, res, next) {
 
 async function deteleProductController(req, res, next) {
   try {
-    const id = req.id;
+    const { id } = req.params;
 
     const result = await deleteProductServices(id);
 
@@ -105,7 +105,7 @@ async function getProductsController(req, res, next) {
 
 async function getProductByIDController(req, res, next) {
   try {
-    const id = req.id;
+    const { id } = req.params;
     const product = await getProductByID(id);
 
     if (!product) {

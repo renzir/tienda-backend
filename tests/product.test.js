@@ -12,7 +12,6 @@ describe("Product Routes", () => {
     await pool.end();
   });
 
-  // Test GET /getProducts
   describe("GET /api/products/getProducts", () => {
     it("should return all products", async () => {
       const response = await request(app).get("/api/products/getProducts");
@@ -23,7 +22,6 @@ describe("Product Routes", () => {
     });
 
     it("should return 404 when no products exist", async () => {
-      // Clear products for this specific test
       const connection = await pool.getConnection();
       await connection.execute("DELETE FROM productos");
       connection.release();
@@ -35,7 +33,6 @@ describe("Product Routes", () => {
     });
   });
 
-  // Test GET /getProductById/:id
   describe("GET /api/products/getProductById/:id", () => {
     it("should return a product by ID", async () => {
       const response = await request(app).get("/api/products/getProductById/1");
@@ -76,10 +73,8 @@ describe("Product Routes", () => {
     });
   });
 
-  // Test PATCH /modifyProduct
   describe("PATCH /modifyProduct", () => {
     it("should modify a product", async () => {
-      // Create a product to modify
       await request(app).post("/api/products/createProduct").send({
         nombre: "Product to Modify",
         precio: 10.0,
@@ -89,7 +84,7 @@ describe("Product Routes", () => {
       const response = await request(app)
         .patch("/api/products/modifyProduct")
         .send({
-          id: 1, // Assuming id 1 exists after seeding
+          id: 1, 
           nombre: "Updated Product",
           precio: 29.99,
         });
@@ -182,7 +177,6 @@ describe("Product Routes", () => {
     });
   });
 
-  // Test POST /createProduct
   describe("POST /createProduct", () => {
     it("should create a new product", async () => {
       const response = await request(app)
@@ -192,13 +186,11 @@ describe("Product Routes", () => {
           precio: 19.99,
           cantidad_disponible: 10,
         });
-      // El controller devuelve 200, no 201
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
     });
 
     it("should return 409 when product already exists", async () => {
-      // Create the product first so it exists for this test
       await request(app).post("/api/products/createProduct").send({
         nombre: "Existing Product",
         precio: 19.99,
@@ -290,7 +282,6 @@ describe("Product Routes", () => {
     });
   });
 
-  // Test DELETE /deleteProduct/:id
   describe("DELETE /deleteProduct/:id", () => {
     it("should delete a product", async () => {
       const response = await request(app).delete(

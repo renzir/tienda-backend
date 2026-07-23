@@ -2,7 +2,6 @@
 const db = require("../../db/database");
 
 class OrderRepository {
-  // Consulta base para validar orden (para usar con FOR UPDATE en transacciones)
   static async getLockedOrderById(connection, orderId) {
     const [rows] = await connection.execute(
       "SELECT id, estado FROM orden WHERE id = ? FOR UPDATE",
@@ -11,7 +10,6 @@ class OrderRepository {
     return rows[0];
   }
 
-  // Obtener items de una orden
   static async getOrderItems(connection, orderId) {
     const [rows] = await connection.execute(
       "SELECT * FROM ordenitems WHERE orden_id = ?",
@@ -20,7 +18,6 @@ class OrderRepository {
     return rows;
   }
 
-  // Actualizar Stock (helper para Cancel/Confirm)
   static async updateStock(
     connection,
     productId,

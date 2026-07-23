@@ -9,7 +9,6 @@ class UserController {
     try {
       const { nombre, email, password } = req.body;
 
-      // Validación inicial (puede moverse a un middleware validator si prefieres)
       if (!nombre || !email || !password) {
         return res.status(400).json({
           success: false,

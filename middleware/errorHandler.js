@@ -9,7 +9,6 @@ class AppError extends Error {
 
 const MiddlewareErrores = (err, req, res, next) => {
   const status = err.status || 500;
-  // Usamos el mensaje del error directamente para que las pruebas lo vean
   const message = err.message || "Error interno del servidor";
 
   console.error(`[ERROR ${status}]: ${message}`);

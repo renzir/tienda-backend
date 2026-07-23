@@ -19,8 +19,8 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api/products", routerProducts); // Unificar prefijo
-app.use("/api/orders", routerOrder); // Unificar prefijo
+app.use("/api/products", routerProducts); 
+app.use("/api/orders", routerOrder); 
 app.use("/users", routerUser);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -28,7 +28,6 @@ app.get("/", (req, res) => {
   res.send("<h2>Bienvenido a la tienda</h2>");
 });
 
-// Middleware para rutas no encontradas (404)
 app.use((req, res, next) => {
   console.log(`Ruta no encontrada: ${req.method} ${req.originalUrl}`);
   const error = new Error("Ruta no encontrada");

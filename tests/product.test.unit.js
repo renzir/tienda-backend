@@ -6,7 +6,6 @@ const {
   deteleProductController,
 } = require("./../features/products/product.controller");
 
-// Mock the services module
 jest.mock("./product.services", () => ({
   getProducts: jest.fn(),
   getProductByID: jest.fn(),
@@ -111,7 +110,6 @@ describe("Product Controller Unit Tests", () => {
     });
   });
 
-  // Test modifyProductController
   describe("modifyProductController", () => {
     it("should modify product successfully", async () => {
       getProductByID.mockResolvedValue({ id: 1, name: "Test Product" });
@@ -165,7 +163,6 @@ describe("Product Controller Unit Tests", () => {
     });
   });
 
-  // Test createProductController
   describe("createProductController", () => {
     it("should create product successfully", async () => {
       getProductNameServices.mockResolvedValue(null);
@@ -221,7 +218,6 @@ describe("Product Controller Unit Tests", () => {
     });
   });
 
-  // Test deteleProductController
   describe("deteleProductController", () => {
     it("should delete product successfully", async () => {
       deleteProductServices.mockResolvedValue(true);

@@ -2,9 +2,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserRepository = require("./user.repository");
 const { AppError } = require("../../middleware/errorHandler");
-
-// Se asume que tienes una variable de entorno para el token. 
-// Si no la tienes aún, puedes agregarla a config/db.js o usar una por defecto para desarrollo.
 const JWT_SECRET = process.env.JWT_SECRET || "tu_clave_secreta_desarrollo";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
 
@@ -16,22 +13,18 @@ class UserService {
    * 3. Guarda en BD
    */
   static async register({ nombre, email, password }) {
-    // Validación básica de negocio
     if (!nombre || !email || !password) {
       throw new AppError("Todos los campos son obligatorios", 400);
     }
 
-    // Verificar si el usuario ya existe
     const existingUser = await UserRepository.findByEmail(email);
     if (existingUser) {
       throw new AppError("El email ya está registrado", 409);
     }
 
-    // Encriptar password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Guardar en BD
     const userId = await UserRepository.create({
       nombre,
       email,
@@ -48,19 +41,16 @@ class UserService {
    * 3. Genera token
    */
   static async login(email, password) {
-    // Buscar usuario
     const user = await UserRepository.findByEmail(email);
     if (!user) {
       throw new AppError("Credenciales inválidas", 401);
     }
 
-    // Comparar contraseña
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new AppError("Credenciales inválidas", 401);
     }
 
-    // Generar token JWT
     const token = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,
