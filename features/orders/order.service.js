@@ -21,7 +21,6 @@ class OrderService {
    */
   static async getOrderDetails(orderId) {
     const [rows] = await db.execute(
-      // Usamos db directamente para consultas de solo lectura sin transacción
       `SELECT o.id AS order_id, o.usuario_id, o.direccion, o.estado,
               oi.producto_id, oi.cantidad, oi.precio_unitario,
               p.nombre AS producto_nombre, p.precio AS producto_precio
@@ -33,10 +32,9 @@ class OrderService {
     );
 
     if (rows.length === 0) {
-      return null; // O lanzar un AppError si prefieres que el controlador lo maneje
+      return null; 
     }
 
-    // Reestructurar los resultados para agrupar los items de la orden
     const orderDetails = {
       id: rows[0].order_id,
       usuario_id: rows[0].usuario_id,
@@ -47,13 +45,11 @@ class OrderService {
 
     rows.forEach((row) => {
       if (row.producto_id) {
-        // Solo si hay items asociados a la orden
         orderDetails.items.push({
           producto_id: row.producto_id,
           cantidad: row.cantidad,
           precio_unitario: row.precio_unitario,
           producto_nombre: row.producto_nombre,
-          // producto_precio: row.producto_precio // Ya tenemos precio_unitario, este puede ser redundante o usarlo para validación
         });
       }
     });
@@ -97,7 +93,6 @@ class OrderService {
         0,
       );
 
-      // Insertamos/Actualizamos item
       await OrderRepository.upsertOrderItem(
         conn,
         orderId,

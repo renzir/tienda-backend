@@ -1,5 +1,6 @@
 # Dependencias
 node_modules/
+.continue
 
 # Variables de entorno
 .env

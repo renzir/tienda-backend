@@ -233,7 +233,7 @@ describe("Product Controller Unit Tests", () => {
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        success: true, // Corregido: 'succes' a 'success'
+        success: true, 
         message: "Producto eliminado",
       });
     });

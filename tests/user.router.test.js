@@ -1,4 +1,3 @@
-// tests/user.router.test.js
 const request = require("supertest");
 const app = require("../app");
 const pool = require("../db/database");
@@ -24,7 +23,9 @@ describe("User Integration Tests", () => {
         password: "password123",
       };
 
-      const response = await request(app).post("/users/register").send(newUser);
+      const response = await request(app)
+        .post("/api/users/register")
+        .send(newUser);
 
       expect(response.statusCode).toBe(201);
       expect(response.body.success).toBe(true);
@@ -41,7 +42,7 @@ describe("User Integration Tests", () => {
       };
 
       const response = await request(app)
-        .post("/users/register")
+        .post("/api/users/register")
         .send(incompleteUser);
 
       expect(response.statusCode).toBe(400);
@@ -56,7 +57,7 @@ describe("User Integration Tests", () => {
         password: "password123",
       };
 
-      await request(app).post("/users/register").send(user1);
+      await request(app).post("/api/users/register").send(user1);
 
       const duplicateUser = {
         nombre: "Luis Martínez 2",
@@ -65,7 +66,7 @@ describe("User Integration Tests", () => {
       };
 
       const response = await request(app)
-        .post("/users/register")
+        .post("/api/users/register")
         .send(duplicateUser);
 
       expect(response.statusCode).toBe(409);
@@ -82,9 +83,9 @@ describe("User Integration Tests", () => {
         password: "securePassword123",
       };
 
-      await request(app).post("/users/register").send(newUser);
+      await request(app).post("/api/users/register").send(newUser);
 
-      const loginResponse = await request(app).post("/users/login").send({
+      const loginResponse = await request(app).post("/api/users/login").send({
         email: newUser.email,
         password: newUser.password,
       });
@@ -92,13 +93,12 @@ describe("User Integration Tests", () => {
       expect(loginResponse.statusCode).toBe(200);
       expect(loginResponse.body.success).toBe(true);
       expect(loginResponse.body.message).toBe("Inicio de sesión exitoso");
-      expect(loginResponse.body.data).toHaveProperty("token");
       expect(loginResponse.body.data.user).toHaveProperty("id");
       expect(loginResponse.body.data.user.email).toBe(newUser.email);
     });
 
     it("should return 400 when missing fields", async () => {
-      const response = await request(app).post("/users/login").send({
+      const response = await request(app).post("/api/users/login").send({
         email: "test@example.com",
       });
 
@@ -108,7 +108,7 @@ describe("User Integration Tests", () => {
     });
 
     it("should return 401 when user not found", async () => {
-      const response = await request(app).post("/users/login").send({
+      const response = await request(app).post("/api/users/login").send({
         email: "noexiste@example.com",
         password: "password123",
       });
@@ -125,9 +125,9 @@ describe("User Integration Tests", () => {
         password: "correctPassword",
       };
 
-      await request(app).post("/users/register").send(newUser);
+      await request(app).post("/api/users/register").send(newUser);
 
-      const response = await request(app).post("/users/login").send({
+      const response = await request(app).post("/api/users/login").send({
         email: newUser.email,
         password: "wrongPassword",
       });

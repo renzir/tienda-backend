@@ -1,4 +1,3 @@
-// tests/order.service.test.js
 const OrderService = require("./../features/orders/order.service");
 const TransactionManager = require("./../db/transaction");
 const OrderRepository = require("./../features/orders/order.repository");
@@ -111,7 +110,6 @@ describe("Unit: OrderService (Logic Layer)", () => {
         },
       );
 
-      // Act
       const result = await OrderService.confirmOrder(orderId);
       expect(result.message).toBe("Orden confirmada y stock vendido");
       expect(OrderRepository.getOrderItems).toHaveBeenCalled();

@@ -17,15 +17,15 @@ const resetAndSeedDatabase = async () => {
 
     await connection.execute(
       "INSERT INTO productos (id, nombre, precio, cantidad_disponible) VALUES (?, ?, ?, ?)",
-      [1, "Test Product 1", 10.99, 100], // Insertar con ID 1
+      [1, "Test Product 1", 10.99, 100], 
     );
     await connection.execute(
       "INSERT INTO productos (id, nombre, precio, cantidad_disponible) VALUES (?, ?, ?, ?)",
-      [2, "Test Product 2", 20.5, 50], // Insertar con ID 2
+      [2, "Test Product 2", 20.5, 50], 
     );
     await connection.execute(
       "INSERT INTO productos (id, nombre, precio, cantidad_disponible) VALUES (?, ?, ?, ?)",
-      [3, "Test Product 3", 25.0, 75], // Insertar con ID 3
+      [3, "Test Product 3", 25.0, 75], 
     );
 
     await connection.execute(

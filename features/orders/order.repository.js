@@ -37,19 +37,17 @@ class OrderRepository {
 
     if (conditions.length === 0) return;
 
-    // Agregar valores de delta en orden de aparición para mantener consistencia
     if (deltaAvailable !== 0) values.push(deltaAvailable);
     if (deltaReserved !== 0) values.push(deltaReserved);
     if (deltaSold !== 0) values.push(deltaSold);
 
-    values.push(productId); // WHERE id = ? al final
+    values.push(productId); 
 
     const query = `UPDATE productos SET ${conditions.join(", ")} WHERE id = ?`;
 
     return await connection.execute(query, values);
   }
 
-  // Upsert orden item
   static async upsertOrderItem(
     connection,
     orderId,
@@ -66,7 +64,6 @@ class OrderRepository {
     await connection.execute(query, [orderId, productId, cantidad, precio]);
   }
 
-  // Operaciones CRUD básicas (sin transacción explícita de negocio)
   static async createOrder(usuario_id, direccion) {
     const [result] = await db.execute(
       "INSERT INTO orden (usuario_id, direccion, estado) VALUES (?, ?, 'pendiente')",

@@ -54,4 +54,48 @@ router.post("/register", UserController.register);
  */
 router.post("/login", UserController.login);
 
+/**
+ * @openapi
+ * /users/me:
+ *   get:
+ *     summary: Obtiene los datos del usuario actual validando la cookie JWT
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Datos del usuario autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: number
+ *                     nombre:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *       401:
+ *         description: No autorizado (token inválido o expirado)
+ */
+router.get("/me", UserController.me);
+
+/**
+ * @openapi
+ * /users/logout:
+ *   post:
+ *     summary: Cierra la sesión del usuario borrando la cookie de sesión
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Sesión cerrada correctamente
+ */
+router.post("/logout", UserController.logout);
+
 module.exports = router;
+

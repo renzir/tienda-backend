@@ -1,4 +1,3 @@
-// tests/user.service.test.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserService = require("./../features/users/user.service");
