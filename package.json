@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage --verbose --runInBand",
+    "test": "DB_NAME=tienda_clon jest --coverage --verbose --runInBand",
     "start": "node index.js",
     "seed": "node seedProducts.js"
   },
@@ -43,3 +43,4 @@
     ]
   }
 }
+

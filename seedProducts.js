@@ -77,6 +77,13 @@ async function seed() {
     const connection = await pool.getConnection();
     console.log("Conectado a la base de datos para sembrar productos...");
 
+    console.log("Limpiando tabla de productos existente...");
+    await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+    await connection.execute("DELETE FROM productos");
+    await connection.execute("ALTER TABLE productos AUTO_INCREMENT = 1");
+    await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
+    console.log("Tabla de productos limpia.");
+
     // Intentamos asegurar que las columnas existan o insertamos con manejo defensivo
     for (const prod of seedProducts) {
       try {
