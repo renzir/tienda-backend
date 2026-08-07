@@ -1,10 +1,10 @@
 const db = require("../../db/database");
 
 const Product = {
-  create: async (nombre, precio, cantidad_disponible) => {
+  create: async (nombre, precio, cantidad_disponible, categoria, descripcion) => {
     const [result] = await db.execute(
-      "INSERT INTO productos (nombre, precio, cantidad_disponible) VALUES (?, ?, ?)",
-      [nombre, precio, cantidad_disponible]
+      "INSERT INTO productos (nombre, precio, cantidad_disponible, categoria, descripcion) VALUES (?, ?, ?, ?, ?)",
+      [nombre, precio, cantidad_disponible, categoria || null, descripcion || null]
     );
     return result.affectedRows === 1;
   },
@@ -24,10 +24,26 @@ const Product = {
     const [rows] = await db.execute("SELECT * FROM productos WHERE nombre = ?", [nombre]);
     return rows[0] || null;
   },
-  update: async (nombre, precio, cantidad_disponible, cantidad_reservada, id) => {
+  update: async (
+    nombre,
+    precio,
+    cantidad_disponible,
+    cantidad_reservada,
+    categoria,
+    descripcion,
+    id
+  ) => {
     const [result] = await db.execute(
-      "UPDATE productos SET nombre = ?, precio = ?, cantidad_disponible = ?, cantidad_reservada = ? WHERE id = ?",
-      [nombre, precio, cantidad_disponible, cantidad_reservada, id]
+      "UPDATE productos SET nombre = ?, precio = ?, cantidad_disponible = ?, cantidad_reservada = ?, categoria = ?, descripcion = ? WHERE id = ?",
+      [
+        nombre,
+        precio,
+        cantidad_disponible,
+        cantidad_reservada,
+        categoria !== undefined ? categoria : null,
+        descripcion !== undefined ? descripcion : null,
+        id,
+      ]
     );
     return result.affectedRows > 0;
   },

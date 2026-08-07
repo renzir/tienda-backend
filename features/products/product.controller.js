@@ -8,7 +8,7 @@ const {
 } = require("./product.services");
 async function createProductController(req, res, next) {
   try {
-    const { nombre, precio, cantidad_disponible } = req.body;
+    const { nombre, precio, cantidad_disponible, categoria, descripcion } = req.body;
 
     const product = await getProductNameServices(nombre);
 
@@ -21,6 +21,8 @@ async function createProductController(req, res, next) {
       nombre,
       precio,
       cantidad_disponible,
+      categoria,
+      descripcion,
     );
 
     if (result) {
@@ -38,7 +40,7 @@ async function createProductController(req, res, next) {
 }
 async function modifyProductController(req, res, next) {
   try {
-    const { id, nombre, precio, cantidad_disponible, cantidad_reservada } =
+    const { id, nombre, precio, cantidad_disponible, cantidad_reservada, categoria, descripcion } =
       req.body;
 
     const product = await getProductByID(id);
@@ -51,9 +53,11 @@ async function modifyProductController(req, res, next) {
     const result = await modifyProductByIDServices(
       nombre,
       precio,
+      id,
       cantidad_disponible || product.cantidad_disponible,
       cantidad_reservada || product.cantidad_reservada,
-      id,
+      categoria !== undefined ? categoria : product.categoria,
+      descripcion !== undefined ? descripcion : product.descripcion,
     );
 
     return res.status(200).json({
@@ -130,3 +134,4 @@ module.exports = {
   deteleProductController,
   modifyProductController,
 };
+

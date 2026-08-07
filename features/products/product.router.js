@@ -70,6 +70,8 @@ router.delete(
  *               nombre: { type: string }
  *               precio: { type: number }
  *               cantidad_disponible: { type: integer }
+ *               categoria: { type: string }
+ *               descripcion: { type: string }
  *     responses:
  *       201:
  *         description: Producto creado correctamente

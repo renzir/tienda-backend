@@ -1,7 +1,7 @@
 const Product = require("./product.model");
 
-async function createProductServices(nombre, precio, cantidad_disponible) {
-  return await Product.create(nombre, precio, cantidad_disponible);
+async function createProductServices(nombre, precio, cantidad_disponible, categoria, descripcion) {
+  return await Product.create(nombre, precio, cantidad_disponible, categoria, descripcion);
 }
 
 async function deleteProductServices(id) {
@@ -23,12 +23,16 @@ async function modifyProductByIDServices(
   id,
   cantidad_disponible,
   cantidad_reservada,
+  categoria,
+  descripcion,
 ) {
   return await Product.update(
     nombre,
     precio,
     cantidad_disponible,
     cantidad_reservada,
+    categoria,
+    descripcion,
     id,
   );
 }
@@ -41,3 +45,4 @@ module.exports = {
   getProductNameServices,
   modifyProductByIDServices,
 };
+
